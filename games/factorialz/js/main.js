@@ -5,6 +5,41 @@ jQuery.extend({
     }
 });
 
+function changeColor(progress, perc) {
+    var color;
+
+    console.log(perc);
+
+    if (perc === 0) {
+        color = 'default';
+    } else if (perc <= 25) {
+        color = 'danger';
+    } else if (perc <= 50) {
+        color = 'warning';
+    } else if (perc <= 75) {
+        color = 'primary';
+    } else if (perc < 100) {
+        color = 'success';
+    } else if (perc >= 100) {
+        color = 'info';
+    }
+
+    console.log(color);
+
+    $(progress).attr('class', 'progress-bar-striped progress-bar progress-bar-' + color);
+    return color;
+}
+
+$('#msg').hide();
+
+var msgs = ['Catching fire', 'Gettin\' hot', 'Flaming'];
+
+function getMsg(streak){
+    if (streak >= 4) return 'SUPER HOT';
+    var msg = (streak + 1) + 'x ' + msgs[streak - 1]
+    return msg;
+}
+
 $('#settings').hide();
 $('#instr').hide();
 
@@ -107,7 +142,7 @@ var hasCompleted = {
 };
 
 var answer;
-var perc = getPercentage()
+var perc = getPercentage();
 var factorPerc = perc.factor;
 var expandPerc = perc.expand;
 var totalPerc = perc.total;
@@ -121,6 +156,9 @@ $('#resetProgress').click(function() {
         factorPerc = scores.factor;
         expandPerc = scores.expand;
         totalPerc = scores.total;
+        streak = 0;
+        $('#msg').hide();
+        $('#msg').text('');
 
         updateScores();
     }
@@ -137,6 +175,8 @@ $('#fgoal, #egoal, #tgoal').click(function () {
 
 function updateScores() {
 
+    console.log('here');
+
     if (factorPerc < 100) {
 
         $('#factorprogress').css({
@@ -150,6 +190,7 @@ function updateScores() {
         });
         $('#factorprogress').attr('aria-valuenow', 100);
     }
+    changeColor('#factorprogress', factorPerc);
     $('#factorprogress').text(factorPerc + '%');
 
     if (expandPerc < 100) {
@@ -165,6 +206,7 @@ function updateScores() {
         });
         $('#expandprogress').attr('aria-valuenow', 100);
     }
+    changeColor('#expandprogress', expandPerc);
     $('#expandprogress').text(expandPerc + '%');
 
     if (totalPerc < 100) {
@@ -180,6 +222,7 @@ function updateScores() {
         });
         $('#totalprogress').attr('aria-valuenow', 100);
     }
+    changeColor('#totalprogress', totalPerc);
     $('#totalprogress').text(totalPerc + '%');
 
 }
@@ -398,13 +441,25 @@ $('#answerForm-factor, #answerForm-expand').submit(function(event) {
 
 });
 
+var streak = 0;
+
 function isCorrect(theirAnswer, correctAnswer) {
     if (theirAnswer.squareCo === correctAnswer.squareCo && theirAnswer.constTerm === correctAnswer.constTerm && theirAnswer.middleTerm === correctAnswer.middleTerm) {
+        $('#msg').show();
+        $('#linebr').hide();
         alert('Correct!');
-        setScore(type, getScore(type) + 5);
+        if (streak === 0) {
+            setScore(type, getScore(type) + 5);
+        } else {
+            setScore(type, getScore(type) + streak*5);
+            $('#msg').text(getMsg(streak));
+        }
         console.log('Congratulations!  Your score in ' + type + 'ing is now ' + getScore(type));
+        streak++;
         displayProblem();
     } else {
+        $('#msg').hide();
+        $('#msg').text('');
         alert('Incorrect!');
         if (getScore(type) >= 5) {
             console.log(getScore(type) - 5);
@@ -412,6 +467,7 @@ function isCorrect(theirAnswer, correctAnswer) {
         } else {
             setScore(type, 0);
         }
+        streak = 0;
         console.log('Oops! Try again.  Your score in ' + type + 'ing is now ' + getScore(type));
     }
 
@@ -476,14 +532,14 @@ $('#nums').submit(function(event) {
 var type = 'factor';
 
 $('#factor').click(function() {
-   type = 'factor';
-   displayProblem();
-   var allowCos = $('#allowCos').prop('checked');
-   if (allowCos) {
-       $('#squareco1').focus();
-   } else {
-       $('#const1').focus();
-   }
+    type = 'factor';
+    displayProblem();
+    var allowCos = $('#allowCos').prop('checked');
+    if (allowCos) {
+        $('#squareco1').focus();
+    } else {
+        $('#const1').focus();
+    }
 });
 
 $('#expand').click(function() {
