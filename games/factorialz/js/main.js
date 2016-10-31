@@ -594,7 +594,7 @@ function generateProblem() {
 
     if (type === 'factor') {
 
-        var problem = squareCoefficient + 'x^2+' + middleTerm + 'x+' + constant;
+        var problem = squareCoefficient + 'x²+' + middleTerm + 'x+' + constant;
 
 
     } else {
@@ -622,7 +622,7 @@ function generateProblem() {
     problem = problem.replace(/-1x/g, '-x');
     problem = problem.replace(/\+0x/g, '');
     problem = problem.replace(/-0x/g, '');
-    problem = problem.replace('1x^2', 'x^2');
+    problem = problem.replace('1x²', 'x²');
 
     return {
         problem: problem,
