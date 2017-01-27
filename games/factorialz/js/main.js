@@ -5,10 +5,176 @@ jQuery.extend({
     }
 });
 
+$('#hisMis').hide();
+
+var prob;
+var curRoots;
+
+if (getHistory() === []) {
+    $('#hisMis').show();
+}
+
+function getHistory() {
+    var hist = localStorage.getItem('history');
+    var parsed = JSON.parse(hist);
+    if (hist) {
+        return JSON.parse(hist);
+    } else {
+        return [];
+    }
+}
+
+function append() {
+    var str = '';
+    var probswers = getHistory();
+    console.log(probswers[0]);
+    for (var i = 0; i < probswers.length; i++) {
+        var probswer = probswers[i];
+        console.log(probswer);
+        var theirAnStr;
+        var corAnStr;
+        var theirNums = probswer.theirNums;
+        var corNums = probswer.corNums;
+
+        if (probswer.theirNums.type === 'factor') {
+
+            theirAnStr = '(' + theirNums.squareCo1 + 'x+' + theirNums.const1 + ')(' + theirNums.squareCo2 + 'x+' + theirNums.const2 + ')';
+            corAnStr = '(' + corNums.squareCo1 + 'x+' + corNums.const1 + ')(' + corNums.squareCo2 + 'x+' + corNums.const2 + ')';
+
+        } else {
+
+            console.log(corNums);
+
+            theirAnStr = theirNums.squareCo + 'x²+' + theirNums.mid + 'x+' + theirNums.const;
+            corAnStr = corNums.squareCo + 'x²+' + corNums.mid + 'x+' + corNums.const;
+
+            console.log(theirAnStr, corAnStr);
+
+            theirAnStr = theirAnStr.replace(/\+-/g, '-');
+            theirAnStr = theirAnStr.replace(/\+1x/g, '+x');
+            theirAnStr = theirAnStr.replace(/-1x/g, '-x');
+            theirAnStr = theirAnStr.replace(/\+0x/g, '');
+            theirAnStr = theirAnStr.replace(/-0x/g, '');
+            theirAnStr = theirAnStr.replace('1x²', 'x²');
+
+            corAnStr = corAnStr.replace(/\+-/g, '-');
+            corAnStr = corAnStr.replace(/\+1x/g, '+x');
+            corAnStr = corAnStr.replace(/-1x/g, '-x');
+            corAnStr = corAnStr.replace(/\+0x/g, '');
+            corAnStr = corAnStr.replace(/-0x/g, '');
+            corAnStr = corAnStr.replace('1x²', 'x²');
+
+        }
+
+        theirAnStr = theirAnStr.replace(/\(1x/g, '(x');
+        theirAnStr = theirAnStr.replace(/\+0/g, '');
+        theirAnStr = theirAnStr.replace(/-0/g, '');
+        theirAnStr = theirAnStr.replace(/\(0x/g, '');
+        theirAnStr = theirAnStr.replace(/\(0x/g, '');
+
+        corAnStr = corAnStr.replace(/\(1x/g, '(x');
+        corAnStr = corAnStr.replace(/\+0/g, '');
+        corAnStr = corAnStr.replace(/-0/g, '');
+        corAnStr = corAnStr.replace(/\(0x/g, '');
+        corAnStr = corAnStr.replace(/\(0x/g, '');
+
+        console.log(theirAnStr);
+
+        if (probswer.correct) {
+            str += '<tr class="success">'
+        } else {
+            str += '<tr class="danger">';
+        }
+        str += '<td>' + probswer.problem + '</td>';
+        str += '<td>' + theirAnStr + '</td>';
+        str += '<td>' + corAnStr + '</td>';
+        str += '</tr>';
+        $('#log').prepend(str);
+
+    }
+}
+
+function updateHistory(prob, theirAns, corAns, theirNums, corNums, correct) {
+    var probswer = {};
+    probswer.problem = theirNums.prob;
+    probswer.theirAns = theirAns;
+    probswer.corAns = corAns;
+    probswer.theirNums = theirNums;
+    probswer.corNums = corNums;
+    probswer.correct = correct;
+    var log = getHistory();
+    log.push(probswer);
+    localStorage.setItem('history', JSON.stringify(log));
+
+    var str;
+    var theirAnStr;
+    var corAnStr;
+    theirAnStr = '(' + theirNums.squareCo1 + 'x+' + theirNums.const1 + ')(' + theirNums.squareCo2 + 'x+' + theirNums.const2 + ')';
+    corAnStr = '(' + corNums.squareCo1 + 'x+' + corNums.const1 + ')(' + corNums.squareCo2 + 'x+' + corNums.const2 + ')';
+    if (theirNums.type === 'factor') {
+        theirAnStr = theirAnStr.replace(/\(1x/g, '(x');
+        theirAnStr = theirAnStr.replace(/\+0/g, '');
+        theirAnStr = theirAnStr.replace(/-0/g, '');
+        theirAnStr = theirAnStr.replace(/\(0x/g, '');
+        theirAnStr = theirAnStr.replace(/\(0x/g, '');
+        console.log(corNums.const2);
+        console.log(corAnStr);
+        corAnStr = corAnStr.replace(/\(1x/g, '(x');
+        corAnStr = corAnStr.replace(/\+0/g, '');
+        corAnStr = corAnStr.replace(/-0/g, '');
+        corAnStr = corAnStr.replace(/\(0x/g, '');
+        corAnStr = corAnStr.replace(/\(0x/g, '');
+        console.log(corAnStr);
+    } else if (theirNums.type === 'expand') {
+        theirAnStr = theirNums.squareCo + 'x²+' + theirNums.mid + 'x+' + theirNums.const;
+        corAnStr = corNums.squareCo + 'x²+' + corNums.mid + 'x+' + corNums.const;
+        console.log(corNums);
+
+        console.log(theirAnStr, corAnStr);
+
+        theirAnStr = theirAnStr.replace(/\+-/g, '-');
+        theirAnStr = theirAnStr.replace(/\+1x/g, '+x');
+        theirAnStr = theirAnStr.replace(/-1x/g, '-x');
+        theirAnStr = theirAnStr.replace(/\+0x/g, '');
+        theirAnStr = theirAnStr.replace(/-0x/g, '');
+        theirAnStr = theirAnStr.replace('1x²', 'x²');
+
+        corAnStr = corAnStr.replace(/\+-/g, '-');
+        corAnStr = corAnStr.replace(/\+1x/g, '+x');
+        corAnStr = corAnStr.replace(/-1x/g, '-x');
+        corAnStr = corAnStr.replace(/\+0x/g, '');
+        corAnStr = corAnStr.replace(/-0x/g, '');
+        corAnStr = corAnStr.replace('1x²', 'x²');
+    } else {
+        console.error('Error');
+    }
+    theirAnStr = theirAnStr.replace(/\+-/g, '-');
+    theirAnStr = theirAnStr.replace(/\+1x/g, '+x');
+    theirAnStr = theirAnStr.replace(/-1x/g, '-x');
+    theirAnStr = theirAnStr.replace(/\+0x/g, '');
+    theirAnStr = theirAnStr.replace(/-0x/g, '');
+    theirAnStr = theirAnStr.replace('1x²', 'x²');
+
+    corAnStr = corAnStr.replace(/\+-/g, '-');
+    corAnStr = corAnStr.replace(/\+1x/g, '+x');
+    corAnStr = corAnStr.replace(/-1x/g, '-x');
+    corAnStr = corAnStr.replace(/\+0x/g, '');
+    corAnStr = corAnStr.replace(/-0x/g, '');
+    corAnStr = corAnStr.replace('1x²', 'x²');
+    console.log(corAnStr);
+    str += '<tr>';
+    str += '<td>' + probswer.problem + '</td>';
+    str += '<td>' + theirAnStr + '</td>';
+    str += '<td>' + corAnStr + '</td>';
+    str += '</tr>';
+    $('#log').prepend(str);
+}
+
+var history = getHistory();
+var globProb;
+
 function changeColor(progress, perc) {
     var color;
-
-    console.log(perc);
 
     if (perc === 0) {
         color = 'default';
@@ -24,8 +190,6 @@ function changeColor(progress, perc) {
         color = 'info';
     }
 
-    console.log(color);
-
     $(progress).attr('class', 'progress-bar-striped progress-bar progress-bar-' + color);
     return color;
 }
@@ -35,16 +199,16 @@ $('#msg').hide();
 var msgs = ['Catching fire', 'Gettin\' hot', 'Flaming'];
 
 function getMsg(streak){
-    if (streak >= 4) return 'SUPER HOT';
-    var msg = (streak + 1) + 'x ' + msgs[streak - 1]
+    if (streak >= 4) return (streak + 1) + 'x ' + 'SUPER HOT';
+    var msg = (streak + 1) + 'x ' + msgs[streak - 1];
     return msg;
 }
 
 $('#settings').hide();
 $('#instr').hide();
+$('#history').hide();
 
 $('#openSidebar').click(function() {
-    console.log('hello?');
     $('#sidebar').css({
         width: '250px'
     });
@@ -70,6 +234,7 @@ $('#showSettings').click(function() {
     $('#settings').show();
     $('#play').hide();
     $('#instr').hide();
+    $('#history').hide();
     $('#sidebar').css({
         width: '0px'
     });
@@ -79,6 +244,7 @@ $('#showPlay').click(function() {
     $('#settings').hide();
     $('#play').show();
     $('#instr').hide();
+    $('#history').hide();
     $('#sidebar').css({
         width: '0px'
     });
@@ -87,11 +253,22 @@ $('#showPlay').click(function() {
 $('#showInstr').click(function() {
     $('#settings').hide();
     $('#play').hide();
+    $('#history').hide();
     $('#instr').show();
     $('#sidebar').css({
         width: '0px'
     });
 });
+
+$('#showLog').click(function() {
+    $('#settings').hide();
+    $('#play').hide();
+    $('#instr').hide();
+    $('#history').show();
+    $('#sidebar').css({
+        width: '0px'
+    });
+})
 
 $('#egoal, #fgoal, #tgoal').change(function () {
     var egoal = $('#egoal').val();
@@ -174,8 +351,6 @@ $('#fgoal, #egoal, #tgoal').click(function () {
 });
 
 function updateScores() {
-
-    console.log('here');
 
     if (factorPerc < 100) {
 
@@ -389,7 +564,24 @@ $('#answerForm-factor, #answerForm-expand').submit(function(event) {
             middleTerm: middleTerm1 + middleTerm2,
             constTerm: const1 * const2
         };
-        isCorrect(theirAnswer, answer);
+
+        var theirNums = {
+            const1: const1 || 0,
+            const2: const2 || 0,
+            squareCo1: squareCo1 || 1,
+            squareCo2: squareCo2 || 0,
+            type: 'factor',
+            prob: prob
+        };
+
+        var corNums = {
+            const1: curRoots[2],
+            const2: curRoots[3],
+            squareCo1: curRoots[0],
+            squareCo2: curRoots[1]
+        };
+
+        isCorrect(theirAnswer, answer, theirNums, corNums);
 
         $('#const1, #const2, #squareco1, #squareco2').val('');
 
@@ -423,10 +615,28 @@ $('#answerForm-factor, #answerForm-expand').submit(function(event) {
             constTerm: constTerm
         };
 
+        var theirNums = {
+            mid: middleTerm || 0,
+            const: constTerm || 0,
+            squareCo: squareCo || 1,
+            type: 'expand',
+            prob: prob
+        };
+
+        var corNums = {
+            const1: curRoots[2],
+            const2: curRoots[3],
+            squareCo1: curRoots[0],
+            squareCo2: curRoots[1],
+            type: type,
+            prob: prob
+        };
+
+
         swOpExp(1, true);
         swOpExp(2, true);
 
-        isCorrect(theirAnswer, answer);
+        isCorrect(theirAnswer, answer, theirNums, corNums);
 
         $('#squareco').val('1');
         $('#mid, #const').val('');
@@ -435,40 +645,62 @@ $('#answerForm-factor, #answerForm-expand').submit(function(event) {
 
         if (isCoAllowed) return $('#squareco').focus();
 
+        $('#mid, #squareco, #const').val('');
+        console.log('hello');
+
         $('#mid').focus();
 
+    }
+
+    if (isCoAllowed) {
+        if (type === 'factor') {
+            $('#squareco1').val('');
+            $('#squareco2').val('');
+        } else {
+            $('#squareco').val('');
+        }
+    }
+
+    if (type === 'factor') {
+        $('#const1').val('');
+        $('#const2').val('');
+    } else {
+        $('#mid').val('');
+        $('#const').val('');
     }
 
 });
 
 var streak = 0;
 
-function isCorrect(theirAnswer, correctAnswer) {
+function isCorrect(theirAnswer, correctAnswer, theirNums, corNums) {
+    var correct;
     if (theirAnswer.squareCo === correctAnswer.squareCo && theirAnswer.constTerm === correctAnswer.constTerm && theirAnswer.middleTerm === correctAnswer.middleTerm) {
         $('#msg').show();
         $('#linebr').hide();
-        alert('Correct!');
+        $('#status').html('');
+        $('#status').append('<div class="alert alert-success"> <strong>Correct!</strong>  Way to go!</div>');
         if (streak === 0) {
             setScore(type, getScore(type) + 5);
         } else {
             setScore(type, getScore(type) + streak*5);
             $('#msg').text(getMsg(streak));
         }
-        console.log('Congratulations!  Your score in ' + type + 'ing is now ' + getScore(type));
+        correct = true;
         streak++;
         displayProblem();
     } else {
         $('#msg').hide();
         $('#msg').text('');
-        alert('Incorrect!');
+        $('#status').html('');
+        $('#status').append('<div class="alert alert-danger"> <strong>Incorrect!</strong> Please try again.</div>');
         if (getScore(type) >= 5) {
-            console.log(getScore(type) - 5);
             setScore(type, getScore(type) - 5);
         } else {
             setScore(type, 0);
         }
         streak = 0;
-        console.log('Oops! Try again.  Your score in ' + type + 'ing is now ' + getScore(type));
+        correct = false;
     }
 
     var scores = getPercentage();
@@ -477,11 +709,11 @@ function isCorrect(theirAnswer, correctAnswer) {
     totalPerc = scores.total;
 
     updateScores();
+    updateHistory(prob, theirAnswer, correctAnswer, theirNums, corNums, correct);
 
-    if (factorPerc === 100 && hasCompleted.factor.get() === false) {
+    if (factorPerc >= 100 && hasCompleted.factor.get() === false) {
         alert('Congratulations!  You have mastered factoring!');
         hasCompleted.factor.set(true);
-        type = 'expand';
         displayProblem();
         var allowCos = $('#allowCos').prop('checked');
         if (allowCos) {
@@ -489,7 +721,7 @@ function isCorrect(theirAnswer, correctAnswer) {
         } else {
             $('#mid').focus();
         }
-    } else if (expandPerc === 100 && hasCompleted.expand.get() === false) {
+    } else if (expandPerc >= 100 && hasCompleted.expand.get() === false) {
         alert('Congratulations!  You have mastered expanding!');
         hasCompleted.expand.set(true);
         type = 'factor';
@@ -530,28 +762,6 @@ $('#nums').submit(function(event) {
 });
 
 var type = 'factor';
-
-$('#factor').click(function() {
-    type = 'factor';
-    displayProblem();
-    var allowCos = $('#allowCos').prop('checked');
-    if (allowCos) {
-        $('#squareco1').focus();
-    } else {
-        $('#const1').focus();
-    }
-});
-
-$('#expand').click(function() {
-    type = 'expand';
-    displayProblem();
-    var allowCos = $('#allowCos').prop('checked');
-    if (allowCos) {
-        $('#squareco').focus();
-    } else {
-        $('#mid').focus();
-    }
-});
 
 $('#allowCos').click(function () {
     displayProblem();
@@ -595,7 +805,7 @@ function generateProblem() {
     if (type === 'factor') {
 
         var problem = squareCoefficient + 'x²+' + middleTerm + 'x+' + constant;
-
+        curRoots = [coefficients[0], coefficients[1], num1, num2];
 
     } else {
 
@@ -609,6 +819,7 @@ function generateProblem() {
             middleTerm: middleTerm,
             constTerm: constant
         };
+        curRoots = [answer.squareCo, answer.middleTerm, answer.constTerm];
 
         problem = problem.replace(/\(1x/g, '(x');
         problem = problem.replace(/\+0/g, '');
@@ -639,6 +850,10 @@ function displayProblem() {
     var probswer = generateProblem();
     var problem = probswer.problem;
     var newAnswer = probswer.answer;
+
+    prob = problem;
+
+    globProb = problem;
 
     answer = newAnswer;
 
@@ -683,3 +898,4 @@ function displayProblem() {
 }
 
 displayProblem();
+append();

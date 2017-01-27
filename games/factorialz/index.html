@@ -22,6 +22,7 @@
         <a href="#" id="showPlay">Play</a>
         <a href="#" id="showSettings">Settings</a>
         <a href="#" id="showInstr">Instructions</a>
+        <a href="#" id="showLog">History</a>
     </div>
     <!-- Settings -->
     <div id="settings" class="jumbotron text-center">
@@ -45,6 +46,24 @@
         <label>Expanding: <input type="number" id="egoal" class="input-sm" value="100" /></label>
         <label>Total: <input type="number" id="tgoal" class="input-sm" value="100" /></label>
     </div>
+    <!-- History -->
+    <div class="jumbotron" id="history">
+        <h1>History</h1>
+        <table id="log" class="table">
+            <thead>
+                <tr>
+                    <th>Problem</th>
+                    <th>Your Answer</th>
+                    <th>Correct Answer</th>
+                    <th>Correct</th>
+                </tr>
+            </thead>
+            <tbody id="logBody">
+
+            </tbody>
+        </table>
+        <p id="hisMis">Solve a problem and it will go on your history.</p>
+    </div>
     <!-- Instructions -->
     <div class="jumbotron" id="instr">
         <h3>Instructions</h3>
@@ -53,8 +72,9 @@
     <!-- Body -->
     <div id="play" class="jumbotron text-center">
 
-        <button class="pull-left btn btn-success" id="factor">Factoring</button>
-        <button class="pull-right btn btn-danger" id="expand">Expanding</button>
+        <div id="status">
+
+        </div>
 
         <div id="probswer">
             <p id="problem"></p>
